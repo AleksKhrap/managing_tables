@@ -30,6 +30,9 @@
                     </li>
                 </ul>
                   <ul class="navbar-nav ms-auto">
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'forum:topics' %}">Форум</a>
+                      </li>
                       {% if user.is_authenticated %}
                         <span class="navbar-text">Привет, {{ user.username }}!</span>
                         <li class="nav-item">

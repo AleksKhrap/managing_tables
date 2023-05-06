@@ -1,0 +1,39 @@
+{% extends 'managing_tables/base.html' %}
+
+{% block page_header %}
+  <div class="d-flex justify-content-between">
+    <h3>{{ topic }}</h3>
+    {% if request.user.is_authenticated %}
+      <div class="d-grid gap-2">
+          <a class="btn btn-dark btn" href="{% url 'forum:new_entry' topic.id %}">
+              Добавить ответ
+          </a>
+      </div>
+    {% endif %}
+  </div>
+{% endblock page_header %}
+
+{% block content %}
+  {% for entry in entries %}
+    <div class="card mb-3">
+      <h4 class="card-header" style="background-color: #EBD80F;">
+        {% if entry.owner == request.user %}
+          <a href="{% url 'forum:edit_entry' entry.id %}" class="link-dark">
+            {{ entry.date_added|date:'M d, Y H:i' }}
+          </a>
+        {% else %}
+          {{ entry.date_added|date:'M d, Y H:i' }}
+        {% endif %}
+      </h4>
+      <div class="card-body" style="background-color: #E6E6E6;">
+        {{ entry.text|linebreaks }}
+      </div>
+    </div>
+    {% empty %}
+      <div class="card mb-3">
+        <h4 class="card-header d-flex justify-content-center" style="background-color: #EBD80F;">
+          Пока что нет ни одного ответа
+        </h4>
+      </div>
+    {% endfor %}
+{% endblock content %}

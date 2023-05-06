@@ -10,7 +10,6 @@ def index(request):
     return render(request, 'managing_tables/index.html')
 
 
-@login_required
 def all_users_tables(request):
     """Page with user tables"""
     tables = Table.objects.filter(privacy=False).order_by('name')
@@ -26,7 +25,6 @@ def tables(request):
     return render(request, 'managing_tables/tables.html', context)
 
 
-@login_required
 def table(request, table_id):
     """Page with info about table"""
     table = get_object_or_404(Table, id=table_id)
@@ -137,7 +135,7 @@ def delete_participant(request, participant_id):
         participant.delete()
         return redirect('managing_tables:table', table_id=table.id)
     context = {'participant': participant, 'table': table}
-    return render(request, 'managing_tables/.html', context)
+    return render(request, 'managing_tables/edit_table.html', context)
 
 
 def check_table_owner(request, table):

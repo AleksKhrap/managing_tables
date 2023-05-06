@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include('users.urls')),
     path('', include('managing_tables.urls')),
+    path('forum/', include('forum.urls')),
 ]
 
 handler404 = 'managing_tables.views.error_404'

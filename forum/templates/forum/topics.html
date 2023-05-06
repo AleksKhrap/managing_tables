@@ -1,0 +1,24 @@
+{% extends 'managing_tables/base.html'%}
+
+{% block page_header %}
+  <div class="d-flex justify-content-between">
+      <h2>Форум</h2>
+      {% if request.user.is_authenticated %}
+        <a class="btn btn-lg btn-dark" href="{% url 'forum:new_topic' %}">Добавить тему</a>
+      {% endif %}
+  </div>
+{% endblock page_header %}
+
+{% block content %}
+  <div class="card mb-3">
+      {% for topic in topics %}
+        <h4 class="card-header border border-dark rounded" style="background-color: #EBD80F;">
+            <a href="{% url 'forum:topic' topic.id %}" class="link-dark">{{ topic }}</a>
+        </h4>
+      {% empty %}
+        <h4 class="card-header d-flex justify-content-center" style="background-color: #EBD80F;">
+            Пока что нет ни одной темы
+        </h4>
+      {% endfor %}
+  </div>
+{% endblock content %}

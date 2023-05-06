@@ -1,0 +1,42 @@
+{% extends 'managing_tables/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block page_header %}
+  <div class="d-flex justify-content-between">
+      <h3>Изменить ответ:</h3>
+      <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#deleteentryModal">
+          Удалить ответ
+      </button>
+  </div>
+  <div class="modal fade" id="deleteentryModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="deleteentryModalLabel">Удаление ответа</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                  Вы уверены, что хотите удалить ответ?
+              </div>
+              <div class="modal-footer">
+                  <form action="{% url 'forum:delete_entry' entry.id %}" method="post">
+                      {% csrf_token %}
+                      {% bootstrap_button button_type="submit" button_class="btn-danger" content="Удалить" %}
+                  </form>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+              </div>
+          </div>
+      </div>
+  </div>
+{% endblock page_header %}
+
+{% block content %}
+  <form action="{% url 'forum:edit_entry' entry.id %}" method="post" class="form">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    {% bootstrap_button button_type="submit" button_class="btn-dark" content="Сохранить изменения" %}
+      <a class="btn btn-secondary" href="{% url 'forum:topic' topic.id %}">
+          Отмена
+      </a>
+  </form>
+{% endblock content %}
