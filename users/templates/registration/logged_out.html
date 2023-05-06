@@ -1,0 +1,17 @@
+{% extends 'managing_tables/base.html' %}
+
+{% block page_header %}
+  <div class="container-fluid bg-dark text-light p-5 mt-3">
+        <div class="container bg-dark p-5">
+            <div class="d-flex justify-content-center mb-3">
+                <h3>Вы вышли из аккаунта</h3>
+            </div>
+            <div class="d-flex justify-content-center mb-3">
+                <p class="lead">До новых встреч!</p>
+            </div>
+            <div class="d-flex justify-content-center">
+                <a class="btn btn-lg btn-warning" href="{% url 'managing_tables:index' %}" role="button">На главную &raquo;</a>
+            </div>
+        </div>
+    </div>
+{% endblock page_header %}

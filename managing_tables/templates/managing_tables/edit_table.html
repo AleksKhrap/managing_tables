@@ -1,0 +1,42 @@
+{% extends 'managing_tables/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block page_header %}
+  <div class="d-flex justify-content-between">
+      <h3>Редактирование таблицы</h3>
+      <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#delpartModal">
+          Удалить участника
+      </button>
+  </div>
+  <div class="modal fade" id="delpartModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="delpartModalLabel">Удаление участника</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                  Вы уверены, что хотите удалить участника?
+              </div>
+              <div class="modal-footer">
+                  <form action="{% url 'managing_tables:delete_participant' participant.id %}" method="post">
+                      {% csrf_token %}
+                      {% bootstrap_button button_type="submit" button_class="btn-danger" content="Удалить" %}
+                  </form>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+              </div>
+          </div>
+      </div>
+  </div>
+{% endblock page_header %}
+
+{% block content %}
+  <form action="{% url 'managing_tables:edit_table' participant.id %}" method="post" class="form">
+      {% csrf_token %}
+      {% bootstrap_form form %}
+      {% bootstrap_button button_type="submit" button_class="btn-dark" content="Сохранить изменения" %}
+      <a class="btn btn-secondary" href="{% url 'managing_tables:table' table.id %}">
+          Отмена
+      </a>
+  </form>
+{% endblock content %}

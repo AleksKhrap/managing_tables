@@ -1,0 +1,27 @@
+{% extends 'managing_tables/base.html' %}
+
+{% block page_header %}
+  <div class="d-flex justify-content-between">
+      <h3>Таблицы</h3>
+      <a class="btn btn-lg btn-dark" href="{% url 'managing_tables:new_table' %}">Создать таблицу</a>
+  </div>
+{% endblock page_header %}
+
+{% block content %}
+  <div class="card mb-3">
+      {% for table in tables %}
+        <h4 class="card-header" style="background-color: #EBD80F;">
+            <a href="{% url 'managing_tables:table' table.id %}" class="link-dark">{{ table.name }}</a>
+        </h4>
+        <div class="card-body" style="background-color: #E6E6E6;">
+            {{ table.competition_type }}
+        </div>
+      {% empty %}
+        <h4 class="card-header" style="background-color: #EBD80F;">
+            <div class="d-flex justify-content-center">
+                Пока что у вас нет ни одной таблицы
+            </div>
+        </h4>
+      {% endfor %}
+  </div>
+{% endblock content %}

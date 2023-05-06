@@ -1,0 +1,664 @@
+{% extends 'managing_tables/base.html' %}
+{% load django_bootstrap5 %}
+{% load table_filter %}
+
+{% block page_header %}
+  {% if table.logotype.url != None %}
+    <img style="max-width:100px" src={{table.logotype.url}} />
+  {% endif %}
+  <div class="d-flex justify-content-between">
+      <h3>{{ table }}</h3>
+      {% if table.owner == request.user %}
+      <div class="d-grid gap-2">
+          <a class="btn btn-dark btn" href="{% url 'managing_tables:new_participant' table.id %}">
+              Добавить участника
+          </a>
+      </div>
+      {% endif %}
+  </div>
+{% endblock page_header %}
+
+{% block content %}
+  {% if table.competition_type == 'Лига' %}
+        <table class="table table-dark table-striped table-hover">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Команда/Игрок</th>
+                <th scope="col">Игры</th>
+                <th scope="col">В</th>
+                <th scope="col">Н</th>
+                <th scope="col">П</th>
+                <th scope="col">Очки</th>
+                {% if table.owner == request.user %}
+                <th></th>
+                {% endif %}
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for participant in participants %}
+            <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>{{ participant }}</td>
+                <td>{{ participant.total_games }}</td>
+                <td>{{ participant.wins }}</td>
+                <td>{{ participant.draws }}</td>
+                <td>{{ participant.defeats }}</td>
+                <td>{{ participant.points }}</td>
+                {% if table.owner == request.user %}
+                <td>
+                    <a class="btn btn-outline-light" href="{% url 'managing_tables:edit_table' participant.id %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                        </svg>
+                    </a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+  {% if table.owner == request.user %}
+  <div class="d-flex justify-content-end">
+      <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleModal">
+          Удалить таблицу
+      </button>
+  </div>
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Удаление таблицы</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                  Вы уверены, что хотите удалить таблицу?
+              </div>
+              <div class="modal-footer">
+                  <form action="{% url 'managing_tables:delete_table' table.id %}" method="post" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      {% bootstrap_button button_type="submit" button_class="btn-danger" content="Удалить" %}
+                  </form>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+              </div>
+          </div>
+      </div>
+  </div>
+  {% endif %}
+  {% elif table.competition_type == 'Олимпийская система' %}
+    {% if participants|length > 0 %}
+    <div class="d-flex justify-content-evenly mt-3">
+        <div class="row h-25 w-25 p-3">
+            {% for participant in participants %}
+              {% if forloop.counter|mod == 0 %}
+                <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                    {% if table.owner == request.user %}
+                    <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                        </svg>
+                    </a>
+                    {% endif %}
+                </div>
+              {% else %}
+                <div class="row border border-warning d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                    {% if table.owner == request.user %}
+                    <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                        </svg>
+                    </a>
+                    {% endif %}
+                </div>
+              {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="row h-25 w-25 p-3">
+            <div class="col h-25 w-25 p-3"></div>
+            {% with participants|count_wins1 as participants1 %}
+            {% for participant in participants1 %}
+                {% if forloop.counter|mod == 0 %}
+                  <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% else %}
+                  <div class="row border border-warning d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% endif %}
+            {% endfor %}
+            {% endwith %}
+        </div>
+
+        <div class="row h-25 w-25 p-3">
+            <div class="col h-25 w-25 p-3"><div class="col h-25 w-25 p-3"></div></div>
+            {% with participants|count_wins2 as participants2 %}
+            {% for participant in participants2 %}
+                {% if forloop.counter|mod == 0 %}
+                  <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% else %}
+                  <div class="row border border-warning d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% endif %}
+            {% endfor %}
+            {% endwith %}
+        </div>
+
+        <div class="row h-25 w-25 p-3">
+            <div class="col h-25 w-25 p-3">
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+            </div>
+            {% with participants|count_wins3 as participants3 %}
+            {% for participant in participants3 %}
+                {% if forloop.counter|mod == 0 %}
+                  <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% else %}
+                  <div class="row border border-warning d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% endif %}
+            {% endfor %}
+            {% endwith %}
+        </div>
+
+        <div class="row h-25 w-25 p-3">
+            <div class="col h-25 w-25 p-3">
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+            </div>
+            {% with participants|count_wins4 as participants4 %}
+            {% for participant in participants4 %}
+                {% if forloop.counter|mod == 0 %}
+                  <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% else %}
+                  <div class="row border border-warning d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% endif %}
+            {% endfor %}
+            {% endwith %}
+        </div>
+
+        <div class="row h-25 w-25 p-3">
+            <div class="col h-25 w-25 p-3">
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+            </div>
+            {% with participants|count_wins5 as participants5 %}
+            {% for participant in participants5 %}
+                {% if forloop.counter|mod == 0 %}
+                  <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% else %}
+                  <div class="row border border-warning d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% endif %}
+            {% endfor %}
+            {% endwith %}
+        </div>
+
+        <div class="row h-25 w-25 p-3">
+            <div class="col h-25 w-25 p-3">
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+            </div>
+            {% with participants|count_wins6 as participants6 %}
+            {% for participant in participants6 %}
+                {% if forloop.counter|mod == 0 %}
+                  <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% else %}
+                  <div class="row border border-warning d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% endif %}
+            {% endfor %}
+            {% endwith %}
+        </div>
+
+        <div class="row h-25 w-25 p-3">
+            <div class="col h-25 w-25 p-3">
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+            </div>
+            {% with participants|count_wins7 as participants7 %}
+            {% for participant in participants7 %}
+                {% if forloop.counter|mod == 0 %}
+                  <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% else %}
+                  <div class="row border border-warning d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% endif %}
+            {% endfor %}
+            {% endwith %}
+        </div>
+    </div>
+    {% endif %}
+    {% if table.owner == request.user %}
+    <div class="d-flex justify-content-end">
+        <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#deleteModal">
+            Удалить сетку
+        </button>
+    </div>
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Удаление турнирной сетки</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Вы уверены, что хотите удалить турнирную сетку?
+                </div>
+                <div class="modal-footer">
+                    <form action="{% url 'managing_tables:delete_table' table.id %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% bootstrap_button button_type="submit" button_class="btn-danger" content="Удалить" %}
+                    </form>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+  {% else %}
+  {% if participants|length > 0 %}
+    <div class="d-flex justify-content-evenly mt-3">
+        <div class="row h-25 w-25 p-3">
+            {% for participant in participants %}
+              {% if forloop.counter|mod == 0 %}
+                <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                    {% if table.owner == request.user %}
+                    <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                        </svg>
+                    </a>
+                    {% endif %}
+                </div>
+              {% else %}
+                <div class="row border border-warning d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                    {% if table.owner == request.user %}
+                    <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                        </svg>
+                    </a>
+                    {% endif %}
+                </div>
+              {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="row h-25 w-25 p-3">
+            <div class="col h-25 w-25 p-3"></div>
+            {% with participants|count_wins21 as participants1 %}
+            {% for participant in participants1 %}
+                {% if forloop.counter|mod == 0 %}
+                  <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% else %}
+                  <div class="row border border-warning d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% endif %}
+            {% endfor %}
+            {% endwith %}
+        </div>
+
+        <div class="row h-25 w-25 p-3">
+            <div class="col h-25 w-25 p-3">
+                <div class="col h-25 w-25 p-3"></div>
+            </div>
+            {% with participants|count_wins22 as participants2 %}
+            {% for participant in participants2 %}
+                {% if forloop.counter|mod == 0 %}
+                  <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% else %}
+                  <div class="row border border-warning d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% endif %}
+            {% endfor %}
+            {% endwith %}
+        </div>
+
+        <div class="row h-25 w-25 p-3">
+            <div class="col h-25 w-25 p-3">
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+            </div>
+            {% with participants|count_wins23 as participants3 %}
+            {% for participant in participants3 %}
+                {% if forloop.counter|mod == 0 %}
+                  <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% else %}
+                  <div class="row border border-warning d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% endif %}
+            {% endfor %}
+            {% endwith %}
+        </div>
+
+        <div class="row h-25 w-25 p-3">
+            <div class="col h-25 w-25 p-3">
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+            </div>
+            {% with participants|count_wins24 as participants4 %}
+            {% for participant in participants4 %}
+                {% if forloop.counter|mod == 0 %}
+                  <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% else %}
+                  <div class="row border border-warning d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% endif %}
+            {% endfor %}
+            {% endwith %}
+        </div>
+
+        <div class="row h-25 w-25 p-3">
+            <div class="col h-25 w-25 p-3">
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+            </div>
+            {% with participants|count_wins25 as participants5 %}
+            {% for participant in participants5 %}
+                {% if forloop.counter|mod == 0 %}
+                  <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% else %}
+                  <div class="row border border-warning d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% endif %}
+            {% endfor %}
+            {% endwith %}
+        </div>
+
+        <div class="row h-25 w-25 p-3">
+            <div class="col h-25 w-25 p-3">
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+            </div>
+            {% with participants|count_wins26 as participants6 %}
+            {% for participant in participants6 %}
+                {% if forloop.counter|mod == 0 %}
+                  <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% else %}
+                  <div class="row border border-warning d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% endif %}
+            {% endfor %}
+            {% endwith %}
+        </div>
+
+        <div class="row h-25 w-25 p-3">
+            <div class="col h-25 w-25 p-3">
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+                <div class="col h-25 w-25 p-3"></div>
+            </div>
+            {% with participants|count_wins27 as participants7 %}
+            {% for participant in participants7 %}
+                {% if forloop.counter|mod == 0 %}
+                  <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% else %}
+                  <div class="row border border-warning d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
+                      {% if table.owner == request.user %}
+                      <a class="btn btn-dark btn-sm w-25" href="{% url 'managing_tables:edit_table' participant.id %}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                          </svg>
+                      </a>
+                      {% endif %}
+                  </div>
+                {% endif %}
+            {% endfor %}
+            {% endwith %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if table.owner == request.user %}
+    <div class="d-flex justify-content-end">
+        <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#delModal">
+            Удалить сетку
+        </button>
+    </div>
+    <div class="modal fade" id="delModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="delLabel">Удаление турнирной сетки</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Вы уверены, что хотите удалить турнирную сетку?
+                </div>
+                <div class="modal-footer">
+                    <form action="{% url 'managing_tables:delete_table' table.id %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% bootstrap_button button_type="submit" button_class="btn-danger" content="Удалить" %}
+                    </form>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+  {% endif %}
+{% endblock content %}
