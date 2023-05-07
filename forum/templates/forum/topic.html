@@ -18,11 +18,12 @@
     <div class="card mb-3">
       <h4 class="card-header" style="background-color: #EBD80F;">
         {% if entry.owner == request.user %}
+          {{ entry.owner }} -
           <a href="{% url 'forum:edit_entry' entry.id %}" class="link-dark">
             {{ entry.date_added|date:'M d, Y H:i' }}
           </a>
         {% else %}
-          {{ entry.date_added|date:'M d, Y H:i' }}
+          {{ entry.owner }} - {{ entry.date_added|date:'M d, Y H:i' }}
         {% endif %}
       </h4>
       <div class="card-body" style="background-color: #E6E6E6;">
