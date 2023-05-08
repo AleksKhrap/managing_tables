@@ -117,7 +117,7 @@
 
         <div class="row h-25 w-25 p-3">
             <div class="col h-25 w-25 p-3"></div>
-            {% with participants|count_wins1 as participants1 %}
+            {% with participants|count_wins:0 as participants1 %}
             {% for participant in participants1 %}
                 {% if forloop.counter|mod == 0 %}
                   <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
@@ -146,7 +146,7 @@
 
         <div class="row h-25 w-25 p-3">
             <div class="col h-25 w-25 p-3"><div class="col h-25 w-25 p-3"></div></div>
-            {% with participants|count_wins2 as participants2 %}
+            {% with participants|count_wins:1 as participants2 %}
             {% for participant in participants2 %}
                 {% if forloop.counter|mod == 0 %}
                   <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
@@ -178,7 +178,7 @@
                 <div class="col h-25 w-25 p-3"></div>
                 <div class="col h-25 w-25 p-3"></div>
             </div>
-            {% with participants|count_wins3 as participants3 %}
+            {% with participants|count_wins:2 as participants3 %}
             {% for participant in participants3 %}
                 {% if forloop.counter|mod == 0 %}
                   <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
@@ -211,7 +211,7 @@
                 <div class="col h-25 w-25 p-3"></div>
                 <div class="col h-25 w-25 p-3"></div>
             </div>
-            {% with participants|count_wins4 as participants4 %}
+            {% with participants|count_wins:3 as participants4 %}
             {% for participant in participants4 %}
                 {% if forloop.counter|mod == 0 %}
                   <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
@@ -245,7 +245,7 @@
                 <div class="col h-25 w-25 p-3"></div>
                 <div class="col h-25 w-25 p-3"></div>
             </div>
-            {% with participants|count_wins5 as participants5 %}
+            {% with participants|count_wins:4 as participants5 %}
             {% for participant in participants5 %}
                 {% if forloop.counter|mod == 0 %}
                   <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
@@ -280,7 +280,7 @@
                 <div class="col h-25 w-25 p-3"></div>
                 <div class="col h-25 w-25 p-3"></div>
             </div>
-            {% with participants|count_wins6 as participants6 %}
+            {% with participants|count_wins:5 as participants6 %}
             {% for participant in participants6 %}
                 {% if forloop.counter|mod == 0 %}
                   <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
@@ -316,7 +316,7 @@
                 <div class="col h-25 w-25 p-3"></div>
                 <div class="col h-25 w-25 p-3"></div>
             </div>
-            {% with participants|count_wins7 as participants7 %}
+            {% with participants|count_wins:6 as participants7 %}
             {% for participant in participants7 %}
                 {% if forloop.counter|mod == 0 %}
                   <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
@@ -403,7 +403,7 @@
 
         <div class="row h-25 w-25 p-3">
             <div class="col h-25 w-25 p-3"></div>
-            {% with participants|count_wins21 as participants1 %}
+            {% with participants|count_wins:1 as participants1 %}
             {% for participant in participants1 %}
                 {% if forloop.counter|mod == 0 %}
                   <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
@@ -434,7 +434,7 @@
             <div class="col h-25 w-25 p-3">
                 <div class="col h-25 w-25 p-3"></div>
             </div>
-            {% with participants|count_wins22 as participants2 %}
+            {% with participants|count_wins:3 as participants2 %}
             {% for participant in participants2 %}
                 {% if forloop.counter|mod == 0 %}
                   <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
@@ -466,7 +466,7 @@
                 <div class="col h-25 w-25 p-3"></div>
                 <div class="col h-25 w-25 p-3"></div>
             </div>
-            {% with participants|count_wins23 as participants3 %}
+            {% with participants|count_wins:5 as participants3 %}
             {% for participant in participants3 %}
                 {% if forloop.counter|mod == 0 %}
                   <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
@@ -499,7 +499,7 @@
                 <div class="col h-25 w-25 p-3"></div>
                 <div class="col h-25 w-25 p-3"></div>
             </div>
-            {% with participants|count_wins24 as participants4 %}
+            {% with participants|count_wins:7 as participants4 %}
             {% for participant in participants4 %}
                 {% if forloop.counter|mod == 0 %}
                   <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
@@ -533,7 +533,7 @@
                 <div class="col h-25 w-25 p-3"></div>
                 <div class="col h-25 w-25 p-3"></div>
             </div>
-            {% with participants|count_wins25 as participants5 %}
+            {% with participants|count_wins:9 as participants5 %}
             {% for participant in participants5 %}
                 {% if forloop.counter|mod == 0 %}
                   <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
@@ -568,7 +568,7 @@
                 <div class="col h-25 w-25 p-3"></div>
                 <div class="col h-25 w-25 p-3"></div>
             </div>
-            {% with participants|count_wins26 as participants6 %}
+            {% with participants|count_wins:11 as participants6 %}
             {% for participant in participants6 %}
                 {% if forloop.counter|mod == 0 %}
                   <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}
@@ -604,7 +604,7 @@
                 <div class="col h-25 w-25 p-3"></div>
                 <div class="col h-25 w-25 p-3"></div>
             </div>
-            {% with participants|count_wins27 as participants7 %}
+            {% with participants|count_wins:13 as participants7 %}
             {% for participant in participants7 %}
                 {% if forloop.counter|mod == 0 %}
                   <div class="row border border-warning mb-4 d-flex justify-content-between" style="background-color: #E6E6E6;">{{ participant }}

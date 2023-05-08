@@ -96,13 +96,13 @@ def edit_table(request, participant_id):
 def new_participant(request, table_id):
     """Page to creating new table"""
     table = get_object_or_404(Table, id=table_id)
+    check_table_owner(request, table)
     if request.method != 'POST':
         # Data not upload
         form = ParticipantForm()
     else:
         form = ParticipantForm(data=request.POST)
         if form.is_valid():
-            check_table_owner(request, table)
             new_participant = form.save(commit=False)
             new_participant.table = table
             new_participant.save()
