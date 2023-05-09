@@ -83,4 +83,4 @@ def delete_entry(request, entry_id):
         entry.delete()
         return redirect('forum:topic', topic_id=topic.id)
     context = {'entry': entry, 'topic': topic}
-    return render(request, 'forum/topics.html', context)
+    return render(request, 'forum/edit_entry.html', context)

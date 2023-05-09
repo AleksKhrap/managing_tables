@@ -14,6 +14,5 @@ def register(request):
             login(request, new_user)
             return redirect('managing_tables:index')
 
-    # Вывод пустой или недействительной формы
     context = {'form': form}
     return render(request, 'registration/register.html', context)
