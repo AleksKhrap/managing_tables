@@ -11,15 +11,17 @@
 
 {% block content %}
   <div class="card mb-3">
-      {% for table in tables %}
-        <h4 class="card-header" style="background-color: #EBD80F;">
-            <a href="{% url 'managing_tables:table' table.id %}" class="link-dark">{{ table.name }}</a>
-        </h4>
-        <div class="card-body" style="background-color: #E6E6E6;">
-            {{ table.competition_type }}
-        </div>
-      {% empty %}
-        <p>Нет ни одной таблицы</p>
-      {% endfor %}
+        {% for table in tables %}
+          <h4 class="card-header" style="background-color: #EBD80F;">
+              <a href="{% url 'managing_tables:table' table.id %}" class="link-dark">{{ table.name }}</a>
+          </h4>
+          <div class="card-body" style="background-color: #E6E6E6;">
+              {{ table.competition_type }}
+          </div>
+        {% empty %}
+          <h4 class="card-header d-flex justify-content-center" style="background-color: #EBD80F;">
+              Пока что нет ни одной таблицы
+          </h4>
+        {% endfor %}
   </div>
 {% endblock content %}

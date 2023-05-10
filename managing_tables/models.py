@@ -17,7 +17,7 @@ class Table(models.Model):
     name = models.CharField(max_length=20)
     competition_type = models.CharField(max_length=30, choices=COMPETITION_TYPES)
     number_of_points_for_a_win = models.PositiveSmallIntegerField(default=3)
-    logotype = models.ImageField(upload_to='managing_tables/images', blank=True)
+    logotype = models.ImageField(upload_to='media', blank=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     privacy = models.BooleanField(default=False)
 

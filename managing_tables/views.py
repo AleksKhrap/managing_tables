@@ -69,7 +69,7 @@ def edit_table(request, participant_id):
             if form.is_valid():
                 if 'wins' or 'draws' or 'defeats' in form.changed_data:
                     participant.total_games = 0
-                    for i in range(participant.wins+participant.draws+participant.looses):
+                    for i in range(participant.wins+participant.draws+participant.defeats):
                         participant.total_games += 1
                         participant.save()
                 if 'wins' or 'draws' in form.changed_data:
