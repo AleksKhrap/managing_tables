@@ -38,6 +38,7 @@ INSTALLED_APPS = [
 
     # Another apps
     'django_bootstrap5',
+    'django_extensions',
 
     # Default apps
     'django.contrib.admin',
