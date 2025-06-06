@@ -1,0 +1,10 @@
+<location base="/table/add" post-act="create" onsuccess="/tables" template="new_table.html">
+  <set id="table" act="create">
+    <block id="name" write="" />
+    <block id="privacy" write="" />
+    <block id="competition_type" write="" />
+    <block id="number_of_points_for_a_win" write="" />
+    <block id="logotype" write="" />
+  </set>
+</location>
+

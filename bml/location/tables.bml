@@ -1,0 +1,8 @@
+<location base="/tables" template="tables.html">
+  <set id="table" fetch="array">
+    <set id="owner" nest="trim">
+      <set id="_users" />
+    </set>
+    <block id="name" order="asc" />
+  </set>
+</location>

@@ -1,0 +1,12 @@
+<location base="/table/edit/[table@id]"
+          post-act="update"
+          onsuccess="/table/[table@id]" template="edit_table.html">
+  <set id="participant" act="update">
+    <block id="wins" write="" />
+    <block id="draws" write="" />
+    <block id="defeats" write="" />
+    <block id="total_games" write="" />
+    <block id="points" write="" />
+  </set>
+</location>
+

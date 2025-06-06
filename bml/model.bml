@@ -1,0 +1,24 @@
+<model>
+  <set id="_users" />
+
+  <set id="table" grants="admin.c+ admin.r+ admin.u+ admin.d+ creator.r+ creator.u+ creator.d+ users.r~">
+    <block id="name" type="string" />
+    <block id="competition_type" type="string" />
+    <block id="number_of_points_for_a_win" type="number" />
+    <block id="logotype" type="file" path="media/" mimes="image/png image/jpeg" />
+    <block id="privacy" type="number" />
+    <set id="owner" by="_users" groups="creator" />
+    <groups>admin_group</groups>
+  </set>
+
+  <set id="participant" grants="admin.c+ admin.r+ admin.u+ admin.d+ creator.r+ creator.u+ creator.d+ users.r~">
+    <block id="participant" type="string" />
+    <block id="wins" type="number" />
+    <block id="draws" type="number" />
+    <block id="defeats" type="number" />
+    <block id="total_games" type="number" />
+    <block id="points" type="number" />
+    <set id="table" by="table" />
+    <groups>admin_group</groups>
+  </set>
+</model>

@@ -1,0 +1,9 @@
+<location base="/table/[table@id]" template="table.html">
+  <set id="table">
+    <set id="participant" fetch="array">
+      <block id="points" order="desc" />
+    </set>
+  </set>
+</location>
+
+

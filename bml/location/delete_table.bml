@@ -1,0 +1,8 @@
+<location base="/delete_table/[table@id]"
+          post-act="delete"
+          onsuccess="/tables"
+          template="delete_table.html">
+  <set id="table" act="delete" />
+</location>
+
+

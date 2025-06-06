@@ -1,0 +1,10 @@
+<location base="/login"
+          post-act="login"
+          onsuccess="tables"
+          template="login.html">
+  <set id="_users" act="login">
+    <block id="login" write="" />
+    <block id="password" write="" />
+  </set>
+</location>
+

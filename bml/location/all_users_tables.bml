@@ -1,0 +1,8 @@
+<location base="/tables/public" template="all_users_tables.html">
+  <set id="table" fetch="array">
+    <block id="privacy" where="0" />
+    <block id="name" order="asc" />
+  </set>
+</location>
+
+

@@ -1,0 +1,7 @@
+<location base="/logout"
+          post-act="logout"
+          onsuccess="/login"
+          template="logged_our.html">>
+  <set id="_users" act="logout" />
+</location>
+

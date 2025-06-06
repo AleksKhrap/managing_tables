@@ -1,0 +1,15 @@
+<location base="/new_participant/[table@id]"
+          post-act="create"
+          onsuccess="/table/[table@id]"
+          template="new_participant.html">
+  <set id="participant" act="create">
+    <block id="participant" write="" />
+    <block id="wins" write="" />
+    <block id="draws" write="" />
+    <block id="defeats" write="" />
+    <block id="total_games" write="" />
+    <block id="points" write="" />
+    <set id="table" write="" />
+  </set>
+</location>
+

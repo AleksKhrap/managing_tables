@@ -1,0 +1,8 @@
+<location base="/delete_participant/[participant@id]"
+          post-act="delete"
+          onsuccess="/table/[participant.table@id]"
+          template="delete_participant.html">
+  <set id="participant" act="delete" />
+</location>
+
+

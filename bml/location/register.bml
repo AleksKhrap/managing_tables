@@ -1,0 +1,10 @@
+<location base="/register"
+          post-act="create"
+          onsuccess="/login"
+          template="register.html">
+  <set id="_users" act="create">
+    <block id="login" write="" />
+    <block id="password" write="" />
+  </set>
+</location>
+
